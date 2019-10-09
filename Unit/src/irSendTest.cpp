@@ -10,7 +10,6 @@ void irSendTest_setup(Adafruit_MCP23008 &mcp, IRsend &irsend)
     mcp.digitalWrite(irSouth, LOW);
     mcp.digitalWrite(irWest, LOW);
     irsend.begin();
-    Serial.begin(9600);
 }
 
 void irSendTest_loop(Adafruit_MCP23008 &mcp, IRsend &irsend)

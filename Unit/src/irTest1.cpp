@@ -8,7 +8,6 @@ void irTest1_setup(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv) {
   irsend.begin();
   irrecv.enableIRIn();
   pinMode(D6, OUTPUT);
-  Serial.begin(9600);
 }
 
 void irTest1_loop(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv) {

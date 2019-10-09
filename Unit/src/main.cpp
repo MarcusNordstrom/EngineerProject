@@ -14,6 +14,7 @@ Adafruit_MCP23008 mcp;
 
 void setup()
 {
+  Serial.begin(9600);
   mcp.begin();
   mcp.pinMode(irNorth, OUTPUT);
   mcp.pinMode(irEast, OUTPUT);
@@ -24,13 +25,13 @@ void setup()
   mcp.pinMode(recvSouth, OUTPUT);
   mcp.pinMode(recvWest, OUTPUT);
   //irTest1_setup(mcp, irsend, irrecv);
-  irSendTest_setup(mcp, irsend);
-  //irRecvTest_setup(mcp, irrecv);
+  //irSendTest_setup(mcp, irsend);
+  irRecvTest_setup(mcp, irrecv);
 }
 
 void loop()
 {
   //irTest1_loop(mcp, irsend, irrecv);
-  irSendTest_loop(mcp, irsend);
-  //irRecvTest_loop(mcp, irrecv);
+  //irSendTest_loop(mcp, irsend);
+  irRecvTest_loop(mcp, irrecv);
 }
