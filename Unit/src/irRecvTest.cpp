@@ -52,20 +52,23 @@ void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
             break;
         }
     }
-    delay(500);
+    delay(50);
     decode_results results;
-    if (irrecv.decode(&results))
+    if (irrecv.decode(&results, NULL))
     {
         // print() & println() can't handle printing long longs. (uint64_t)
+        Serial.print("  ");
         serialPrintUint64(results.value, HEX);
+        //Serial.print(resultToHumanReadableBasic(&results));
+        results.value = 0;
         irrecv.resume(); // Receive the next value
     }
     
-    Serial.println("  ");
+    Serial.println("");
     ++recvState;
     if (recvState == 4)
     {
         recvState = 0;
     }
-    //delay(500);
+    delay(500);
 }

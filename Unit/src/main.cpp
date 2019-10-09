@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "Adafruit_MCP23008.h"
-//#include "irTest1.h"
+#include "irTest1.h"
 #include "irSendTest.h"
 #include "irRecvTest.h"
 #include "defines.h"
