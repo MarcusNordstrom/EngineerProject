@@ -1,18 +1,36 @@
 #include <Arduino.h>
-#include <IRremoteESP8266.h>
-#include <IRsend.h>
+#include "Adafruit_MCP23008.h"
+//#include "irTest1.h"
+#include "irSendTest.h"
+#include "irRecvTest.h"
+#include "defines.h"
 
-const uint16_t kIrLed = 14;
-IRsend irsend(kIrLed);
+const uint16_t sendGPIO = 14; // D5
+const uint16_t recvGPIO = 13; // D7
 
-void setup() {
-  // put your setup code here, to run once:
-  irsend.begin();
-  Serial.begin(9600, SERIAL_8N1, SERIAL_TX_ONLY);
+IRsend irsend(sendGPIO);
+IRrecv irrecv(recvGPIO);
+Adafruit_MCP23008 mcp;
+
+void setup()
+{
+  mcp.begin();
+  mcp.pinMode(irNorth, OUTPUT);
+  mcp.pinMode(irEast, OUTPUT);
+  mcp.pinMode(irSouth, OUTPUT);
+  mcp.pinMode(irWest, OUTPUT);
+  mcp.pinMode(recvNorth, OUTPUT);
+  mcp.pinMode(recvEast, OUTPUT);
+  mcp.pinMode(recvSouth, OUTPUT);
+  mcp.pinMode(recvWest, OUTPUT);
+  //irTest1_setup(mcp, irsend, irrecv);
+  irSendTest_setup(mcp, irsend);
+  //irRecvTest_setup(mcp, irrecv);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  irsend.sendNEC(0x00FFE01FUL);
-  delay(2000);
+void loop()
+{
+  //irTest1_loop(mcp, irsend, irrecv);
+  irSendTest_loop(mcp, irsend);
+  //irRecvTest_loop(mcp, irrecv);
 }
