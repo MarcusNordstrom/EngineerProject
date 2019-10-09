@@ -1,0 +1,109 @@
+/*
+ *  Denna sketch ansluter till vår SQL-server och skickar information via
+ *  GET/POST requests. 
+*/
+
+#include <ESP8266WiFi.h>
+
+#ifndef STASSID
+#define STASSID "MAU"
+#define STAPSK  "12345678"
+#endif
+
+const char* ssid     = STASSID;
+const char* password = STAPSK;
+
+const char* host = "192.168.0.2";
+const uint16_t port = 8888;
+String data;
+String url;
+
+void setup() {
+  Serial.begin(115200);
+
+  // We start by connecting to a WiFi network
+
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
+     would try to act as both a client and an access-point and could cause
+     network-issues with your other WiFi-devices on your WiFi-network. */
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  randomSeed(analogRead(0));
+}
+
+void loop() {
+  Serial.print("connecting to ");
+  Serial.print(host);
+  Serial.print(':');
+  Serial.println(port);
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  if (!client.connect(host, port)) {
+    Serial.println("connection failed");
+    delay(5000);
+    return;
+  }
+
+  
+  // This will send a post request to the server
+  Serial.println("sending data to server");
+  if (client.connected()) {
+    data = random(100);
+    // GET request för att ladda upp information direkt via URL:en
+    url = "GET /data.php?humidity=" + data + " HTTP/1.0";
+    client.println(url);
+    client.println();
+    /*
+     * POST request för att hantera utgående meddelanden till SQL-databasen
+    client.println("POST /data.php HTTP/1.1");
+    client.println("Host: 192.168.0.2");
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.print("Content-Length: ");
+    client.println(data.length());
+    client.println();
+    client.print(data);
+    */
+  }
+
+  // wait for data to be available
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      delay(60000);
+      return;
+    }
+  }
+
+  // Read all the lines of the reply from server and print them to Serial
+  Serial.println("receiving from remote server");
+  // not testing 'client.connected()' since we do not need to send data here
+  while (client.available()) {
+    char ch = static_cast<char>(client.read());
+    Serial.print(ch);
+  }
+
+  // Close the connection
+  Serial.println();
+  Serial.println("closing connection");
+  client.stop();
+
+  delay(300000); // execute once every 5 minutes, don't flood remote service
+}
