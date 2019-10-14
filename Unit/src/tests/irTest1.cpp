@@ -1,4 +1,4 @@
-#include "irTest1.h"
+#include "tests/irTest1.h"
 
 /* Snabbt test för att se om IR kommunikationen fungerar, skickar ett fast meddelande och skriver ut allt den får in till konsol*/
 

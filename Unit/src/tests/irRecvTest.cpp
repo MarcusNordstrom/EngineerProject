@@ -1,4 +1,4 @@
-#include "irRecvTest.h"
+#include "tests/irRecvTest.h"
 
 /* testa ta emot meddelande från alla håll */
 
@@ -17,6 +17,10 @@ int recvState = 0;
 
 void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
 {
+    mcp.digitalWrite(recvNorth, LOW);
+    mcp.digitalWrite(recvEast, LOW);
+    mcp.digitalWrite(recvSouth, LOW);
+    mcp.digitalWrite(recvWest, LOW);
     switch (recvState)
     {
         {
@@ -52,7 +56,7 @@ void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
             break;
         }
     }
-    delay(50);
+    delay(500);
     decode_results results;
     if (irrecv.decode(&results, NULL))
     {

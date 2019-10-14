@@ -1,4 +1,4 @@
-#include "irSendTest.h"
+#include "tests/irSendTest.h"
 
 /* testa skicka 4 olika meddelande */
 
