@@ -16,7 +16,6 @@ void printLetter(Adafruit_SSD1306 &display, String letter, displayResult result)
     int16_t curX = 23;
     int16_t curY = 40;
     display.setCursor(curX, curY);
-    display.print(letter);
     if (letter == "Å")
     {
         display.print('A');

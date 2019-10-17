@@ -38,6 +38,7 @@ void loop()
   //irTest1_loop(mcp, irsend, irrecv);
   //irSendTest_loop(mcp, irsend);
   //irRecvTest_loop(mcp, irrecv);
-  loopIR(mcp, irrecv, irsend, irdir, 2);
-  delay(1000);
+  printLetter(display, "1");
+  loopIR(mcp, irrecv, irsend, irdir, 1);
+  delay(30);
 }

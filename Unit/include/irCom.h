@@ -7,10 +7,7 @@
 #include "defines.h"
 
 typedef struct {
-    int8_t north;
-    int8_t east;
-    int8_t south;
-    int8_t west;
+    int8_t values[4] ;
 } irDir;
 
 void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend, irDir &irDir);

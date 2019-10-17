@@ -10,7 +10,6 @@ void irRecvTest_setup(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
     mcp.digitalWrite(recvSouth, LOW);
     mcp.digitalWrite(recvWest, LOW);
     irrecv.enableIRIn();
-    Serial.begin(9600);
 }
 
 int recvState = 0;
@@ -63,6 +62,8 @@ void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
         // print() & println() can't handle printing long longs. (uint64_t)
         Serial.print("  ");
         serialPrintUint64(results.value, HEX);
+        Serial.print(" ");
+        serialPrintUint64((results.value && 0xFFFF0FFFUL), HEX);
         //Serial.print(resultToHumanReadableBasic(&results));
         results.value = 0;
         irrecv.resume(); // Receive the next value
