@@ -4,8 +4,8 @@
   
   <?php 
   require_once 'displaycontroller.php';
-  $id = GetFirstNode(10);
-  $word = GetWord($id);
+  
+  $word = GetWord();
  
   $wordArray = str_split($word[0]);
   $deadLetters = str_split($word[1]);?>

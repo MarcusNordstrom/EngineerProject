@@ -6,7 +6,7 @@ $pass = "pass";
 
 function getFirstNode($id) {
     $link = mysqli_connect($GLOBALS['host'], $GLOBALS['username'], $GLOBALS['pass']);
-    $db = mysqli_select_db ( $link, "nodes" );
+    $db = mysqli_select_db ( $link, $GLOBALS['db_name']);
 
     // Check connection
     if($link === false){
@@ -29,15 +29,15 @@ function getFirstNode($id) {
     return $id;
 }
 
-function getWord($firstId) {
+function getWord() {
    
     $link = mysqli_connect($GLOBALS['host'], $GLOBALS['username'], $GLOBALS['pass']);
-    $db = mysqli_select_db ( $link, "nodes" );
+    $db = mysqli_select_db ( $link, $GLOBALS['db_name'] );
 // Check connection
 if($link === false){
     die("ERROR: Could not connect. " . mysqli_connect_error());
 }
-    $firstNodeSelect = "SELECT id, bokstav, hgranne FROM data WHERE id = '$firstId'";
+    $firstNodeSelect = "SELECT id, bokstav, hgranne FROM data WHERE vgranne = 0 AND hgranne !=0";
     $word = "";
     $ids = [];
     //Get first letter of the word
@@ -52,9 +52,7 @@ if($link === false){
                 $ids[] = $id;
   
                 
-            }
-            
-              //TODO: ADD LETTER/ID TO DB/ARRAY
+            }          
        
         do {
             $sqlNext = "SELECT id, bokstav, hgranne FROM data WHERE id = '$nextNode'";
@@ -69,9 +67,6 @@ if($link === false){
                     $ids[] = $id;
                     $word .= $letter;
                 }
-            
-            
-            //TODO: ADD LETTER/ID TO DB/ARRAY
             }
             else {
                 $nextNode = 0;
@@ -119,7 +114,7 @@ if($link === false){
 
 function GetScore() {
     $link = mysqli_connect($GLOBALS['host'], $GLOBALS['username'], $GLOBALS['pass']);
-    $db = mysqli_select_db ( $link, "nodes" );
+    $db = mysqli_select_db ( $link, $GLOBALS['db_name']);
     $sqlSumScore = "SELECT SUM(score) AS score_sum FROM words";
     if ($result = mysqli_query($link, $sqlSumScore)) {
         $row = mysqli_fetch_assoc($result);
