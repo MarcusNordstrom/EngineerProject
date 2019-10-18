@@ -47,11 +47,8 @@ if($link === false){
                 $nextNode = $row['hgranne'];
                 $id = $row['id'];
                 $letter = $row['bokstav'];
-
                 $word .= $letter;
                 $ids[] = $id;
-  
-                
             }          
        
         do {
