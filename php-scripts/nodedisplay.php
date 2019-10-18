@@ -5,7 +5,7 @@
   <?php 
   require_once 'displaycontroller.php';
   
-  $word = GetWord();
+  $word = getWordFromId(10);
  
   $wordArray = str_split($word[0]);
   $deadLetters = str_split($word[1]);?>
