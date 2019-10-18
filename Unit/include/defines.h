@@ -1,3 +1,19 @@
+#ifndef WIFICONN
+#define WIFICONN
+#define WIFISSID "Connectify-Gothi"
+#define WIFIPW  "gruppgothi"
+#define WIFIHOST "192.168.137.101"
+#define WIFIPORT 8888
+#endif
+
+
+#ifndef IR
+typedef struct {
+    int8_t values[4] ;
+} irDir;
+
+#define IR
+
 #define irNorth 7
 #define irEast 6
 #define irSouth 5
@@ -12,3 +28,4 @@
 #define EAST 1
 #define SOUTH 2
 #define WEST 3
+#endif
