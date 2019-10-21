@@ -1,5 +1,7 @@
 #include "wifiCom.h"
 
+static WiFiClient client;
+
 void setupWiFi(void)
 {
     WiFi.mode(WIFI_STA);
@@ -17,7 +19,7 @@ void setupWiFi(void)
 
 void getWiFi(uint8_t &id, String &letter)
 {
-    WiFiClient client;
+    //WiFiClient client;
     String response, url;
     String _id = "";
     int splitter = 0;
@@ -109,6 +111,7 @@ void getWiFi(uint8_t &id, String &letter)
                 id = (uint8_t)_id.toInt();
             }
         }
+        client.stop();
         return;
     }
 }
@@ -116,7 +119,7 @@ void getWiFi(uint8_t &id, String &letter)
 void sendNeighborsWiFi(uint8_t id, irDir neighbors)
 {
     // GET /data.php?id=(ID)&vgranne=(WEST)&hgranne=(EAST) HTTP/1.1
-    WiFiClient client;
+    //WiFiClient client;
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -125,16 +128,16 @@ void sendNeighborsWiFi(uint8_t id, irDir neighbors)
     if (client.connected())
     {
         // GET request för att skicka sina grannar
-        String url = "/data.php?id=" + String(id) + "&vgranne=" + String(neighbors.values[WEST]) + "&hgranne=" + String(neighbors.values[EAST]) + " HTTP/1.1";
+        String url = "GET /data.php?id=" + String(id) + "&vgranne=" + String(neighbors.values[WEST]) + "&hgranne=" + String(neighbors.values[EAST]) + " HTTP/1.1";
         client.println(url);
         client.println();
     }
+    client.stop();
 }
 
-bool sendWordWiFi(void)
+bool sendWordWiFi(uint8_t id)
 {
-    //TODO: fråga henrik om var detta ska skickas
-    WiFiClient client;
+    //WiFiClient client;
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -142,17 +145,21 @@ bool sendWordWiFi(void)
     }
     if (client.connected())
     {
-        String url = "/checkWord.php?id= HTTP/1.1";
+        //String url = "/check.php?id="+String((uint16_t)id)+" HTTP/1.1";
+        String url = "GET /check.php HTTP/1.0";
         client.println(url);
         client.println();
     }
     String response = "";
+    while (client.available() == 0){delay(5);}
     while (client.available())
     {
         char ch = static_cast<char>(client.read());
         response.concat(ch);
     }
-    if(response == "1")
+    char req = response.charAt(response.length()-1);
+    client.stop();
+    if(req == '1')
     {
         return true;
     } else {

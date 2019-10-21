@@ -24,8 +24,9 @@ typedef struct {
 #define recvSouth 1
 #define recvWest 0
 
-#define NORTH 0
+#define WEST 0
 #define EAST 1
 #define SOUTH 2
-#define WEST 3
+#define NORTH 3
+
 #endif

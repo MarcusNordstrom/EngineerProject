@@ -5,4 +5,4 @@
 void setupWiFi(void);
 void getWiFi(uint8_t& id, String& letter);
 void sendNeighborsWiFi(uint8_t id, irDir neighbors);
-bool sendWordWiFi(void);
+bool sendWordWiFi(uint8_t id);

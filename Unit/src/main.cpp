@@ -37,33 +37,37 @@ void setup()
 
 void loop()
 {
+  //irDir irdir;
   //irTest1_loop(mcp, irsend, irrecv);
   //irSendTest_loop(mcp, irsend);
   //irRecvTest_loop(mcp, irrecv);
   uint8_t id;
   String letter;
   getWiFi(id, letter);
+  Serial.println("ID ");
+  Serial.print(unsigned(id));
+  Serial.println("letter " + letter);
   while (1)
   {
     printLetter(display, letter);
-    if(loopIR(mcp, irrecv, irsend, &currentDir, id))
+    if(loopIR(mcp, irrecv, irsend, currentDir, id))
     {
       sendNeighborsWiFi(id, currentDir);
     }
     delay(30);
     if(button.get() == 0)
     {
-      if(button.BUTTON_A || button.BUTTON_B)
+      if(button.BUTTON_A || button.BUTTON_B)  //Inlagd så att vi kan lägga till olika händelser för A/B knappen, just nu funkar båda likadant
       {
-        bool result = sendWordWiFi();
+        bool result = sendWordWiFi(id);
         if(result) {
           printLetter(display, letter, RIGHT);
         } else {
           printLetter(display, letter, WRONG);
         }
         uint64_t now = millis();
-        while(millis() < now + 1000) {  //Håller right/wrong på skärmen i 1s medans den ändå loopar IR
-          if(loopIR(mcp, irrecv, irsend, &currentDir, id))
+        while(millis() < now + 4000) {  //Håller right/wrong på skärmen i 1s medans den ändå loopar IR
+          if(loopIR(mcp, irrecv, irsend, currentDir, id))
           {
             sendNeighborsWiFi(id, currentDir);
           }

@@ -13,6 +13,7 @@ void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend)
     mcp.pinMode(recvSouth, OUTPUT);
     mcp.pinMode(recvWest, OUTPUT);
     //Set all low
+    //mcp.writeGPIO(0x00);
     mcp.digitalWrite(irNorth, LOW);
     mcp.digitalWrite(irEast, LOW);
     mcp.digitalWrite(irSouth, LOW);
@@ -27,92 +28,75 @@ void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend)
     irrecv.enableIRIn();
 }
 
-int dir = 0;
+uint8_t dir = 0;
 irDir prevValue;
 irDir confirmedValues;
-bool loopIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend, irDir* irdir, uint8_t ID)
+bool loopIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend, irDir& irdir, uint8_t ID)
 {
-    //Send part
-    uint64_t sendValue = 0xFFFF0FFFUL;
+    //GPIO
+    mcp.digitalWrite(irNorth, LOW);
+    mcp.digitalWrite(irEast, LOW);
+    mcp.digitalWrite(irSouth, LOW);
+    mcp.digitalWrite(irWest, LOW);
+    mcp.digitalWrite(recvNorth, LOW);
+    mcp.digitalWrite(recvEast, LOW);
+    mcp.digitalWrite(recvSouth, LOW);
+    mcp.digitalWrite(recvWest, LOW);
+
+    switch (dir)
+    {
+    case WEST:
+        //Serial.print("WEST (0): ");
+        mcp.digitalWrite(irWest, HIGH);
+        mcp.digitalWrite(recvWest, HIGH);
+        break;
+    case EAST:
+        //Serial.print("EAST (1): ");
+        mcp.digitalWrite(irWest, HIGH);
+        mcp.digitalWrite(recvWest, HIGH);
+        break;
+    default:
+        break;
+    }
+    //SEND
+    uint64_t sendValue = 0xFF0F0FFFUL;
     sendValue |= (uint64_t)ID << 12;
-    //mcp.digitalWrite(irNorth, HIGH);
-    mcp.digitalWrite(irEast, HIGH);
-    //mcp.digitalWrite(irSouth, HIGH);
-    mcp.digitalWrite(irWest, HIGH);
+    sendValue |= (uint64_t)dir << 20;
     for (size_t o = 0; o < 3; o++)
     {
         irsend.sendNEC(sendValue, kNECBits, 3); //irsend.sendNEC(sendValue);
         delay(10);
     }
-    mcp.digitalWrite(irNorth, LOW);
-    mcp.digitalWrite(irEast, LOW);
-    mcp.digitalWrite(irSouth, LOW);
-    mcp.digitalWrite(irWest, LOW);
-    //Recv part
-    //irDir raw_data[2];
-    switch (dir)
-    {
-        {
-        /*case 0: //North
-            Serial.print("NORTH ");
-            mcp.digitalWrite(recvNorth, HIGH);
-            mcp.digitalWrite(recvEast, LOW);
-            mcp.digitalWrite(recvSouth, LOW);
-            mcp.digitalWrite(recvWest, LOW);
-            break;*/
-        case 0: //East (case 1 in 2D version)
-            Serial.print("EAST ");
-            mcp.digitalWrite(recvNorth, LOW);
-            mcp.digitalWrite(recvEast, HIGH);
-            mcp.digitalWrite(recvSouth, LOW);
-            mcp.digitalWrite(recvWest, LOW);
-            break;
-        /*case 2: //South
-            Serial.print("SOUTH ");
-            mcp.digitalWrite(recvNorth, LOW);
-            mcp.digitalWrite(recvEast, LOW);
-            mcp.digitalWrite(recvSouth, HIGH);
-            mcp.digitalWrite(recvWest, LOW);
-            break;*/
-        case 1: //West (case 3 in 2D version)
-            Serial.print("WEST ");
-            mcp.digitalWrite(recvNorth, LOW);
-            mcp.digitalWrite(recvEast, LOW);
-            mcp.digitalWrite(recvSouth, LOW);
-            mcp.digitalWrite(recvWest, HIGH);
-            break;
-        default:
-            break;
-        }
-    }
+
+    //recive
     delay(500);
     decode_results results;
     if (irrecv.decode(&results, NULL))
     {
-        // print() & println() can't handle printing long longs. (uint64_t)
         Serial.print("  ");
         serialPrintUint64(results.value, HEX);
         Serial.print(" ");
-        if ((results.value & 0xFFFF0FFF) == 0xFFFF0FFF)
+        if ((results.value & 0xFF0F0FFF) == 0xFF0F0FFF)
         {
             Serial.print("MESSAGE ID = ");
-            uint8_t ID = (results.value & 0x0000F000) >> 12;
-            Serial.print(unsigned(ID));
+            uint8_t recvID = (results.value  & 0x0000F000) >> 12;
+            uint8_t recvDIR = (results.value & 0x00F0000) >> 20;
+            Serial.print(unsigned(recvID) + " DIR = " + unsigned(recvDIR));
+            if(dir == recvDIR)
+            {
+                Serial.println("CORRECT SIDE");
+            }
             //TODO: lägg in om det är uppdaterade ID från grannar så return true;
+
         }
         results.value = 0;
         irrecv.resume(); // Receive the next value
     }
-
-    Serial.println("");
-    ++dir;
-    if (dir == 2) // == 4 in 2D version
+    Serial.println();
+    //Loop
+    if (++dir == 2) //only loop west/east
     {
         dir = 0;
     }
-    mcp.digitalWrite(recvNorth, LOW);
-    mcp.digitalWrite(recvEast, LOW);
-    mcp.digitalWrite(recvSouth, LOW);
-    mcp.digitalWrite(recvWest, LOW);
     return false;
 }
