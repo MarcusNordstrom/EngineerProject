@@ -23,28 +23,28 @@ void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
     switch (recvState)
     {
         {
-        case 0: //North
+        case NORTH: //North
             Serial.print("NORTH ");
             mcp.digitalWrite(recvNorth, HIGH);
             mcp.digitalWrite(recvEast, LOW);
             mcp.digitalWrite(recvSouth, LOW);
             mcp.digitalWrite(recvWest, LOW);
             break;
-        case 1: //East
+        case EAST: //East
             Serial.print("EAST ");
             mcp.digitalWrite(recvNorth, LOW);
             mcp.digitalWrite(recvEast, HIGH);
             mcp.digitalWrite(recvSouth, LOW);
             mcp.digitalWrite(recvWest, LOW);
             break;
-        case 2: //South
+        case SOUTH: //South
             Serial.print("SOUTH ");
             mcp.digitalWrite(recvNorth, LOW);
             mcp.digitalWrite(recvEast, LOW);
             mcp.digitalWrite(recvSouth, HIGH);
             mcp.digitalWrite(recvWest, LOW);
             break;
-        case 3: //West
+        case WEST: //West
             Serial.print("WEST ");
             mcp.digitalWrite(recvNorth, LOW);
             mcp.digitalWrite(recvEast, LOW);
@@ -63,7 +63,19 @@ void irRecvTest_loop(Adafruit_MCP23008 &mcp, IRrecv &irrecv)
         Serial.print("  ");
         serialPrintUint64(results.value, HEX);
         Serial.print(" ");
-        serialPrintUint64((results.value && 0xFFFF0FFFUL), HEX);
+        if ((results.value & 0xFF0F0FFF) == 0xFF0F0FFF)
+        {
+            Serial.print("MESSAGE ID = ");
+            uint16_t recvID = (results.value & 0x0000F000) >> 12;
+            uint16_t recvDIR = (results.value & 0x00F00000) >> 20;
+            Serial.print(unsigned(recvID));
+            Serial.print(" DIR = ");
+            Serial.print(unsigned(recvDIR));
+            if (recvState == recvDIR)
+            {
+                Serial.println(" CORRECT SIDE ");
+            }
+        }
         //Serial.print(resultToHumanReadableBasic(&results));
         results.value = 0;
         irrecv.resume(); // Receive the next value

@@ -9,7 +9,7 @@
 
 #ifndef IR
 typedef struct {
-    int8_t values[4] ;
+    uint16_t values[4] ;
 } irDir;
 
 #define IR

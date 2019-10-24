@@ -8,4 +8,6 @@
 
 void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend);
 
-bool loopIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend, irDir& irDir, uint8_t ID);
+bool loopIR(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv, irDir& irDir, uint8_t id);
+
+void sendIR(Adafruit_MCP23008 &mcp, IRsend &irsend, uint8_t ID);

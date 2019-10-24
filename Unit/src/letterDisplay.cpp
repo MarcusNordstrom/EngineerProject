@@ -10,7 +10,7 @@ void setupDisplay(Adafruit_SSD1306 &display)
     display.display();
 }
 
-void printLetter(Adafruit_SSD1306 &display, String letter, displayResult result)
+void printLetter(Adafruit_SSD1306 &display, String letter, irDir irdir, displayResult result)
 {
     display.clearDisplay();
     int16_t curX = 23;
@@ -52,6 +52,27 @@ void printLetter(Adafruit_SSD1306 &display, String letter, displayResult result)
         display.invertDisplay(0);
         break;
     }
+    for (size_t i = 0; i < 4; i++)
+    {
+        switch (i)
+        {
+            {
+            case WEST:
+                if(irdir.values[WEST] != 0) {
+                    display.fillCircle(3, 24, 2, WHITE);
+                }
+                break;
+            case EAST:
+                if(irdir.values[EAST] != 0) {
+                    display.fillCircle(61, 24, 2, WHITE);
+                }
+                break;
+            default:
+
+                break;
+            }
+        }
+    }
 
     display.display();
 }
@@ -59,20 +80,21 @@ void printLetter(Adafruit_SSD1306 &display, String letter, displayResult result)
 static int loopvar = 0;
 void displayTest(Adafruit_SSD1306 &display, String letter)
 {
+    irDir dir;
     switch (loopvar)
     {
         {
         case 1:
-            printLetter(display, letter, RIGHT);
+            printLetter(display, letter, dir, RIGHT);
             break;
         case 2:
-            printLetter(display, letter);
+            printLetter(display, letter, dir);
             break;
         case 3:
-            printLetter(display, letter, WRONG);
+            printLetter(display, letter,dir ,WRONG);
             break;
         case 4:
-            printLetter(display, letter, ONLYLETTER);
+            printLetter(display, letter, dir ,ONLYLETTER);
         }
     }
     if (++loopvar == 5)

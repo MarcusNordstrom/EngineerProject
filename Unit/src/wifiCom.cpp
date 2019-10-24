@@ -23,6 +23,7 @@ void getWiFi(uint8_t &id, String &letter)
     String response, url;
     String _id = "";
     int splitter = 0;
+    unsigned long time = millis();
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -50,7 +51,7 @@ void getWiFi(uint8_t &id, String &letter)
     */
     }
     /* Kan inte nå servern */
-    unsigned long timeout = millis();
+    //unsigned long timeout = millis();
     while (client.available() == 0)
     {
         if (millis() - timeout > 5000)
@@ -82,6 +83,7 @@ void getWiFi(uint8_t &id, String &letter)
        ett tecken. På detta sättet så kan man också fånga svenska
        tecken vilket inte går vanligtvis ifall man sparar det som
        en bokstav. */
+    //Serial.printf("/id.php responseTime: %lums\n", (millis() - time));
     if (response.charAt(response.length() - 1) == '!')
     {
         Serial.println("RESPONSE IS VALID!");
@@ -120,6 +122,7 @@ void sendNeighborsWiFi(uint8_t id, irDir neighbors)
 {
     // GET /data.php?id=(ID)&vgranne=(WEST)&hgranne=(EAST) HTTP/1.1
     //WiFiClient client;
+    //unsigned long time = millis();
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -127,17 +130,20 @@ void sendNeighborsWiFi(uint8_t id, irDir neighbors)
     }
     if (client.connected())
     {
+        Serial.printf("Skickar grannar V:%d H:%d", neighbors.values[WEST], neighbors.values[EAST]);
         // GET request för att skicka sina grannar
-        String url = "GET /data.php?id=" + String(id) + "&vgranne=" + String(neighbors.values[WEST]) + "&hgranne=" + String(neighbors.values[EAST]) + " HTTP/1.1";
+        String url = "GET /data.php?id=" + String(id) + "&vgranne=" + String(neighbors.values[WEST]) + "&hgranne=" + String(neighbors.values[EAST]) + " HTTP/1.0";
         client.println(url);
         client.println();
     }
+    //Serial.printf("/data.php responseTime: %lums\n", (millis() - time));
     client.stop();
 }
 
 bool sendWordWiFi(uint8_t id)
 {
     //WiFiClient client;
+    //unsigned long time = millis();
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -146,7 +152,7 @@ bool sendWordWiFi(uint8_t id)
     if (client.connected())
     {
         //String url = "/check.php?id="+String((uint16_t)id)+" HTTP/1.1";
-        String url = "GET /check.php HTTP/1.0";
+        String url = "GET /UI/check.php?id="+ String(id) +" HTTP/1.0";
         client.println(url);
         client.println();
     }
@@ -157,7 +163,8 @@ bool sendWordWiFi(uint8_t id)
         char ch = static_cast<char>(client.read());
         response.concat(ch);
     }
-    char req = response.charAt(response.length()-1);
+    char req = response.charAt(response.length() - 8); // -8 to get rid of </html>
+    //Serial.printf("/UI/check.php responseTime: %lums\n", (millis() - time));
     client.stop();
     if(req == '1')
     {

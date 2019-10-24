@@ -30,6 +30,11 @@ void setup()
   setupWiFi();
   setupDisplay(display);
   setupIR(mcp, irrecv, irsend);
+  for (size_t i = 0; i < 4; i++)
+  {
+    currentDir.values[i] = 0;
+  }
+  
   //irTest1_setup(mcp, irsend, irrecv);
   //irSendTest_setup(mcp, irsend);
   //irRecvTest_setup(mcp, irrecv);
@@ -49,25 +54,31 @@ void loop()
   Serial.println("letter " + letter);
   while (1)
   {
-    printLetter(display, letter);
-    if(loopIR(mcp, irrecv, irsend, currentDir, id))
+    sendIR(mcp, irsend, id);
+    printLetter(display, letter, currentDir);
+    if (loopIR(mcp, irsend, irrecv, currentDir, id))
     {
       sendNeighborsWiFi(id, currentDir);
     }
     delay(30);
-    if(button.get() == 0)
+    if (button.get() == 0)
     {
-      if(button.BUTTON_A || button.BUTTON_B)  //Inlagd så att vi kan lägga till olika händelser för A/B knappen, just nu funkar båda likadant
+      if (button.BUTTON_A || button.BUTTON_B) //Inlagd så att vi kan lägga till olika händelser för A/B knappen, just nu funkar båda likadant
       {
         bool result = sendWordWiFi(id);
-        if(result) {
-          printLetter(display, letter, RIGHT);
-        } else {
-          printLetter(display, letter, WRONG);
+        if (result)
+        {
+          printLetter(display, letter, currentDir, RIGHT);
+        }
+        else
+        {
+          printLetter(display, letter, currentDir, WRONG);
         }
         uint64_t now = millis();
-        while(millis() < now + 4000) {  //Håller right/wrong på skärmen i 1s medans den ändå loopar IR
-          if(loopIR(mcp, irrecv, irsend, currentDir, id))
+        while (millis() < now + 4000)
+        { //Håller right/wrong på skärmen i 4s medans den ändå loopar IR
+          sendIR(mcp, irsend, id);
+          if (loopIR(mcp, irsend, irrecv, currentDir, id))
           {
             sendNeighborsWiFi(id, currentDir);
           }
