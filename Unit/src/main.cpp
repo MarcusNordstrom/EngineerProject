@@ -35,6 +35,7 @@ void setup()
     currentDir.values[i] = 0;
   }
   
+  //test setups, avkommentera för att köra testen (avkommentera även matchande metod_loop i void loop())
   //irTest1_setup(mcp, irsend, irrecv);
   //irSendTest_setup(mcp, irsend);
   //irRecvTest_setup(mcp, irrecv);
@@ -42,17 +43,24 @@ void setup()
 
 void loop()
 {
-  //irDir irdir;
+  //test loops
   //irTest1_loop(mcp, irsend, irrecv);
   //irSendTest_loop(mcp, irsend);
   //irRecvTest_loop(mcp, irrecv);
-  uint8_t id;
+  uint8_t id = 0;
   String letter;
-  getWiFi(id, letter);
+  getWiFi(id, letter); //hämtar id och bokstav av servern, returnerar 0 och "" om man inte får svar
+  while(id == 0 && letter == "")
+  {
+    Serial.println("ID unavalible");
+    printLetter(display, "!", currentDir);
+    delay(10000);
+    getWiFi(id, letter);
+  }
   Serial.println("ID ");
   Serial.print(unsigned(id));
   Serial.println("letter " + letter);
-  while (1)
+  while (1) //main loop
   {
     sendIR(mcp, irsend, id);
     printLetter(display, letter, currentDir);

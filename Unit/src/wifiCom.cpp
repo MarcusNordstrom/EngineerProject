@@ -23,7 +23,7 @@ void getWiFi(uint8_t &id, String &letter)
     String response, url;
     String _id = "";
     int splitter = 0;
-    unsigned long time = millis();
+    //unsigned long time = millis();
     if (!client.connect(WIFIHOST, WIFIPORT))
     {
         Serial.println("connection failed");
@@ -51,16 +51,13 @@ void getWiFi(uint8_t &id, String &letter)
     */
     }
     /* Kan inte nå servern */
-    //unsigned long timeout = millis();
+    unsigned long timeout = millis();
     while (client.available() == 0)
     {
         if (millis() - timeout > 5000)
         {
             Serial.println("Väntar på ledig plats...");
             client.stop();
-            id = 0;
-            letter = "";
-            return;
         }
     }
     /* Läs in svaret från servern och behandla informationen 
@@ -115,6 +112,10 @@ void getWiFi(uint8_t &id, String &letter)
         }
         client.stop();
         return;
+    } else {
+        //tomt svar från servern dvs. att alla ID är tagna
+        id = 0;
+        letter = "";
     }
 }
 

@@ -2,6 +2,7 @@
 
 void setupDisplay(Adafruit_SSD1306 &display)
 {
+    //Konfigurerar skärmen till 2x font med FreeMono9pt7b typsnittet
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.setTextSize(2);
     display.setFont(&FreeMono9pt7b);
@@ -12,7 +13,9 @@ void setupDisplay(Adafruit_SSD1306 &display)
 
 void printLetter(Adafruit_SSD1306 &display, String letter, irDir irdir, displayResult result)
 {
+    //Skriver ut bokstav (även å/ä/ö)
     display.clearDisplay();
+    display.setTextSize(2);
     int16_t curX = 23;
     int16_t curY = 40;
     display.setCursor(curX, curY);
@@ -38,6 +41,7 @@ void printLetter(Adafruit_SSD1306 &display, String letter, irDir irdir, displayR
     {
         display.print(letter);
     }
+    //inverterar/ritar ett kryss vid rätt/fel
     switch (result)
     {
     case RIGHT:
@@ -52,18 +56,21 @@ void printLetter(Adafruit_SSD1306 &display, String letter, irDir irdir, displayR
         display.invertDisplay(0);
         break;
     }
+    //ritar en prick på sidan med kommunikation
     for (size_t i = 0; i < 4; i++)
     {
         switch (i)
         {
             {
             case WEST:
-                if(irdir.values[WEST] != 0) {
+                if (irdir.values[WEST] != 0)
+                {
                     display.fillCircle(3, 24, 2, WHITE);
                 }
                 break;
             case EAST:
-                if(irdir.values[EAST] != 0) {
+                if (irdir.values[EAST] != 0)
+                {
                     display.fillCircle(61, 24, 2, WHITE);
                 }
                 break;
@@ -80,6 +87,7 @@ void printLetter(Adafruit_SSD1306 &display, String letter, irDir irdir, displayR
 static int loopvar = 0;
 void displayTest(Adafruit_SSD1306 &display, String letter)
 {
+    //test av skärmen
     irDir dir;
     switch (loopvar)
     {
@@ -91,10 +99,10 @@ void displayTest(Adafruit_SSD1306 &display, String letter)
             printLetter(display, letter, dir);
             break;
         case 3:
-            printLetter(display, letter,dir ,WRONG);
+            printLetter(display, letter, dir, WRONG);
             break;
         case 4:
-            printLetter(display, letter, dir ,ONLYLETTER);
+            printLetter(display, letter, dir, ONLYLETTER);
         }
     }
     if (++loopvar == 5)

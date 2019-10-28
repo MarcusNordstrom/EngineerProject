@@ -3,7 +3,6 @@
 #include "Fonts/FreeMono9pt7b.h"
 #include "defines.h"
 
-
 typedef enum {
     ONLYLETTER,
     RIGHT,

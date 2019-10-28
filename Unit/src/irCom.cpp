@@ -6,7 +6,7 @@
 void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend)
 {
     mcp.begin();
-    //Set all output
+    //Sätter alla pinnar till utgång
     mcp.pinMode(irNorth, OUTPUT);
     mcp.pinMode(irEast, OUTPUT);
     mcp.pinMode(irSouth, OUTPUT);
@@ -15,7 +15,7 @@ void setupIR(Adafruit_MCP23008 &mcp, IRrecv &irrecv, IRsend &irsend)
     mcp.pinMode(recvEast, OUTPUT);
     mcp.pinMode(recvSouth, OUTPUT);
     mcp.pinMode(recvWest, OUTPUT);
-    //Set all low
+    //Sätter alla pinnar låga
     mcp.digitalWrite(irNorth, LOW);
     mcp.digitalWrite(irEast, LOW);
     mcp.digitalWrite(irSouth, LOW);
@@ -62,7 +62,7 @@ bool loopIR(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv, irDir &irdir
     //    delay(250);
     //}
     decode_results results;
-    if (irrecv.decode(&results, NULL))
+    if (irrecv.decode(&results, NULL)) //dekodar vad som ligger i interupt ram, NULL är med för att rensa interupt ram
     {
         Serial.print("  ");
         serialPrintUint64(results.value, HEX);
@@ -70,15 +70,16 @@ bool loopIR(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv, irDir &irdir
         if ((results.value & 0xFF0F0FFF) == 0xFF0F0FFF)
         {
             Serial.print("MESSAGE ID = ");
+            //bitskiftar och utför and för att få ut ID och vilket håll meddelandet skulle till
             uint16_t recvID = (results.value & 0x0000F000) >> 12;
             uint16_t recvDIR = (results.value & 0x00F00000) >> 20;
             Serial.print(unsigned(recvID));
             Serial.print(" DIR = ");
             Serial.print(unsigned(recvDIR));
-            if (dir == recvDIR)
+            if (dir == recvDIR) //matchar var vi lyssnar och var vi ska ta emot meddelandet
             {
                 Serial.println(" CORRECT SIDE ");
-                if (prevValue.values[dir] == recvID)
+                if (prevValue.values[dir] == recvID) //matchar ID med tidigare meddelande, stämmer de skickar vi ut dessa
                 {
                     Serial.print(" same as previous, send to server! ");
                     irdir.values[dir] = recvID;
@@ -95,10 +96,7 @@ bool loopIR(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv, irDir &irdir
     }
     else
     {
-        if (prevValue.values[dir] == 0)
-        {
-            irdir.values[dir] = 0;
-        }
+        irdir.values[dir] = 0;
         prevValue.values[dir] = 0;
     }
     if (++dir == 2)
@@ -111,6 +109,8 @@ bool loopIR(Adafruit_MCP23008 &mcp, IRsend &irsend, IRrecv &irrecv, irDir &irdir
 
 void sendIR(Adafruit_MCP23008 &mcp, IRsend &irsend, uint8_t ID)
 {
+    //skapar och skickar ett meddelande via IR till öst/väst med respektive riktning
+    //Protokollet ser ut som 0xFF(dir)F(id)FFF där dir är riktning det ska till och ID är nodens unika indetifikations nummer
     uint64_t idMsg = 0xFF0F0FFFUL;
     idMsg |= (uint64_t)ID << 12;
 
