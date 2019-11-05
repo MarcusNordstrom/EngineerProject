@@ -1,0 +1,46 @@
+.table_titles {
+    padding-right: 20px;
+    padding-left: 20px;
+    color: #FFF;
+    background-color: #0000FF;
+}
+
+.table_cells_odd,
+.table_cells_even,
+.table_titles {
+    text-align: center;
+}
+
+.table_cells_even {
+    background-color: #f0f0f0;
+}
+
+table {
+    border: 2px solid #333;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+body {
+    font-family: "Trebuchet MS", Courier;
+}
+
+#progressBar {
+    width: 90%;
+    margin: 10px auto;
+    height: 22px;
+    background-color: #000059;
+}
+
+#progressBar div {
+    height: 100%;
+    text-align: right;
+    padding: 0 10px;
+    line-height: 22px;
+    /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #0000FF;
+    color: #fff;
+    box-sizing: border-box;
+}

@@ -15,7 +15,7 @@ $sql_update = "UPDATE data
 
 $result = mysqli_query($con,$getID);
     while($row = mysqli_fetch_array($result)) {
-        echo $row['id'] , "-" , $randomString, "!";
+      
         $id = $row['id'];
         mysqli_query($con,"UPDATE data SET bokstav='$randomString' WHERE id=$id");
         mysqli_close($con);
